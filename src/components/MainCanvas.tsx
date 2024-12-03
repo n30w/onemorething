@@ -16,7 +16,7 @@ const MainCanvas: React.FC = () => {
           style={{ borderRadius: '4px', overflow: 'hidden' }}
           className='outline-1 outline-dotted  h-fit'
         ></div>
-        <SayBox />
+        {/* <SayBox /> */}
       </div>
     </>
   )

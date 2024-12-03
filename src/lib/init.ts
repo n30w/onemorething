@@ -15,6 +15,7 @@ import { SUBTRACTION, Evaluator } from 'three-bvh-csg'
 import p5 from 'p5'
 import { Font, FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
+import { generateTextualObjects } from './pieces/textualObject'
 
 export function initThree2(p5: p5) {
   const { scene, camera, renderer } = setupScene2()
@@ -28,38 +29,14 @@ export function initThree2(p5: p5) {
 
   scene.background = new THREE.Color(0xffffff)
 
-  const geometry = new THREE.BoxGeometry()
-
-  for (let i = 0; i < 10; i++) {
-    const object = new THREE.Mesh(
-      geometry,
-      new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
-    )
-
-    object.position.x = Math.random() * 40 - 20
-    object.position.y = Math.random() * 40 - 20
-    object.position.z = Math.random() * 40 - 20
-
-    object.rotation.x = Math.random() * 2 * Math.PI
-    object.rotation.y = Math.random() * 2 * Math.PI
-    object.rotation.z = Math.random() * 2 * Math.PI
-
-    object.scale.x = Math.random() + 0.5
-    object.scale.y = Math.random() + 0.5
-    object.scale.z = Math.random() + 0.5
-
-    scene.add(object)
-  }
+  generateTextualObjects(scene)
 
   const raycaster = new THREE.Raycaster()
 
-  let theta = 0
   const pointer = new THREE.Vector2()
 
   renderer.setAnimationLoop(
     animate(new Stats(), () => {
-      theta += 0.1
-
       camera.lookAt(scene.position)
 
       camera.updateMatrixWorld()
