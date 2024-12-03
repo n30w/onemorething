@@ -1,6 +1,7 @@
 # one more thing
 
-_one more thing_ is a project about leaving things behind. The name comes from the English expression, "Oh yeah, _one more thing_".
+_one more thing_ is a project about leaving things behind. The name comes from
+the English expression, "Oh yeah, _one more thing_".
 
 ## Development
 
@@ -26,6 +27,7 @@ There is also a backend component, which uses these services:
 ### Three JS
 
 - <https://threejs-journey.com/lessons/first-threejs-project#first-render>
+- <https://akashhamirwasia.com/blog/create-stunning-3D-text-with-custom-fonts-in-threejs/>
 
 ### TypeScript
 

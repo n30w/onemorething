@@ -11,18 +11,31 @@
   "devDependencies": {
     "@types/dat.gui": "^0.7.13",
     "@types/p5": "^1.7.6",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
     "@types/stats": "^0.16.30",
     "@types/three": "^0.170.0",
+    "prettier": "3.4.1",
     "typescript": "~5.6.3",
     "vite": "^6.0.1"
   },
   "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee",
   "dependencies": {
+    "@tailwindcss/vite": "4.0.0-beta.4",
     "dat.gui": "^0.7.9",
     "firebase": "^11.0.2",
     "p5": "^1.11.2",
+    "react": "19.0.0-rc.1",
+    "react-dom": "19.0.0-rc.1",
     "stats-js": "^1.0.1",
     "stats.js": "^0.17.0",
-    "three": "^0.171.0"
+    "tailwindcss": "4.0.0-beta.4",
+    "three": "^0.171.0",
+    "three-addons": "^1.2.0",
+    "three-bvh-csg": "^0.0.16"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
   }
 }
