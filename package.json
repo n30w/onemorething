@@ -32,7 +32,8 @@
     "tailwindcss": "4.0.0-beta.4",
     "three": "^0.171.0",
     "three-addons": "^1.2.0",
-    "three-bvh-csg": "^0.0.16"
+    "three-bvh-csg": "^0.0.16",
+    "troika-three-text": "^0.52.2"
   },
   "overrides": {
     "@types/react": "npm:types-react@rc",

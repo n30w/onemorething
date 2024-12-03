@@ -24,13 +24,13 @@ export function setupScene2() {
     far,
   )
 
-  camera.position.z = 20
+  camera.position.z = 60
 
   const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
     antialias: true,
   })
 
-  // renderer.autoClear = false
+  renderer.autoClear = false
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(...dim)
 
@@ -94,7 +94,7 @@ export function setupScene() {
 
 export function setupSubScene() {
   // Dimensions for canvas.
-  const dim: [number, number] = [480, 480]
+  const dim: [number, number] = [720, 720]
 
   const scene: THREE.Scene = new THREE.Scene()
 
@@ -126,7 +126,7 @@ export function setupSubScene() {
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.minDistance = 5
   controls.maxDistance = 110
-  controls.enablePan = false
+  controls.enablePan = true
 
   return {
     scene,

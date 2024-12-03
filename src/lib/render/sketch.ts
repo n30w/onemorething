@@ -8,7 +8,7 @@ export const sketch = (p5: p5) => {
     canvas.hide()
 
     // initThree(p5)
-    initThree2(p5)
+    initThree2()
     initSubThree(p5)
   }
 

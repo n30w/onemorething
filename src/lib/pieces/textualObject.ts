@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 export class TextualObject {
-  public text: String[]
+  public text: string
   public isSelected: boolean
   public position: THREE.Vector3
   public scale: THREE.Vector3
@@ -22,7 +22,7 @@ export class TextualObject {
     rotation: THREE.Vector3
     scale: THREE.Vector3
   }) {
-    this.text = []
+    this.text = ''
     this.isSelected = false
     this.position = position
     this.scale = scale
@@ -33,24 +33,39 @@ export class TextualObject {
       new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
     )
 
-    this.mesh.position.x = Math.random() * 40 - 20
-    this.mesh.position.y = Math.random() * 40 - 20
-    this.mesh.position.z = Math.random() * 40 - 20
+    this.mesh.position.x = position.x
+    this.mesh.position.y = position.y
+    this.mesh.position.z = position.z
 
-    this.mesh.rotation.x = Math.random() * 2 * Math.PI
-    this.mesh.rotation.y = Math.random() * 2 * Math.PI
-    this.mesh.rotation.z = Math.random() * 2 * Math.PI
+    this.mesh.rotation.x = rotation.x
+    this.mesh.rotation.y = rotation.y
+    this.mesh.rotation.z = rotation.z
 
-    this.mesh.scale.x = Math.random() + 10
-    this.mesh.scale.y = Math.random() + 10
-    this.mesh.scale.z = Math.random() + 10
+    this.mesh.scale.x = scale.x
+    this.mesh.scale.y = scale.y
+    this.mesh.scale.z = scale.z
+
+    this.mesh.userData = {
+      sender: '',
+      body: this.text,
+    }
   }
 
   render() {}
+
+  public getBody() {
+    return this.mesh.userData.body
+  }
+
+  public setBody(body: string) {
+    this.mesh.userData.body = body
+    this.text = body
+  }
 }
 
-export function generateTextualObjects(scene: THREE.Scene) {
-  for (let i = 0; i < 10; i++) {
+export function generateTextualObjects(scene?: THREE.Scene): TextualObject[] {
+  const objects: TextualObject[] = []
+  for (let i = 0; i < 2; i++) {
     const object = new TextualObject({
       position: new THREE.Vector3(
         Math.random() * 40 - 20,
@@ -69,18 +84,12 @@ export function generateTextualObjects(scene: THREE.Scene) {
       ),
     })
 
-    // object.position.x = Math.random() * 40 - 20
-    // object.position.y = Math.random() * 40 - 20
-    // object.position.z = Math.random() * 40 - 20
+    objects.push(object)
 
-    // object.rotation.x = Math.random() * 2 * Math.PI
-    // object.rotation.y = Math.random() * 2 * Math.PI
-    // object.rotation.z = Math.random() * 2 * Math.PI
-
-    // object.scale.x = Math.random() + 10
-    // object.scale.y = Math.random() + 10
-    // object.scale.z = Math.random() + 10
-
-    scene.add(object.mesh)
+    if (scene) {
+      scene.add(object.mesh)
+    }
   }
+
+  return objects
 }

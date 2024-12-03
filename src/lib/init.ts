@@ -13,11 +13,45 @@ import { animationBuilder } from './render/animation'
 import { SUBTRACTION, Evaluator } from 'three-bvh-csg'
 
 import p5 from 'p5'
-import { Font, FontLoader } from 'three/addons/loaders/FontLoader.js'
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
+import { Font } from 'three/addons/loaders/FontLoader.js'
 import { generateTextualObjects } from './pieces/textualObject'
+//@ts-ignore
+import { Text } from 'troika-three-text'
 
-export function initThree2(p5: p5) {
+let font: Font
+
+const textGeometryParams = (font: Font) => {
+  return {
+    font: font,
+    size: 3,
+    depth: 0.05,
+    curveSegments: 2,
+    bevelEnabled: true,
+    bevelThickness: 0.5,
+    bevelSize: 0.1,
+    bevelSegments: 3,
+  }
+}
+
+const textMaterial = new THREE.MeshStandardMaterial({
+  color: 'black',
+  roughness: 0.1,
+  wireframe: true,
+})
+
+const objs = generateTextualObjects()
+objs[0].setBody(
+  `Meek Mill and Drake and Neo asjodjkas asdjkasdj askldja sdkja sdalkjs d`,
+)
+
+objs[1].setBody(
+  `What are you even thinking of doing with that degree. Like seriously?`,
+)
+
+let selectedObj = objs[0].mesh.userData
+// let selectedObj
+
+export function initThree2() {
   const { scene, camera, renderer } = setupScene2()
   const animate = animationBuilder(renderer, scene, camera)
 
@@ -29,7 +63,9 @@ export function initThree2(p5: p5) {
 
   scene.background = new THREE.Color(0xffffff)
 
-  generateTextualObjects(scene)
+  for (let i = 0; i < objs.length; i++) {
+    scene.add(objs[i].mesh)
+  }
 
   const raycaster = new THREE.Raycaster()
 
@@ -48,16 +84,23 @@ export function initThree2(p5: p5) {
       const intersects = raycaster.intersectObjects(scene.children, false)
       if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
-          if (INTERSECTED)
+          if (INTERSECTED) {
             INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+            selectedObj = intersects[0].object
+          }
 
           INTERSECTED = intersects[0].object
           INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex()
+
+          // Makes the intersected object red.
           INTERSECTED.material.emissive.setHex(0xff0000)
+          selectedObj = intersects[0].object.userData
+          console.log(selectedObj.body)
         }
       } else {
-        if (INTERSECTED)
+        if (INTERSECTED) {
           INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex)
+        }
 
         INTERSECTED = null
       }
@@ -229,62 +272,9 @@ export function initSubThree(p5: p5) {
   const group = new THREE.Group()
   group.position.y = 0
 
-  const fontLoader = new FontLoader()
+  // const myText = `Meek Mill and Drake and Neo` // 27 chars
 
-  const textGeometryParams = (font: Font) => {
-    return {
-      font: font,
-      size: 3,
-      height: 0.05,
-      curveSegments: 2,
-      bevelEnabled: true,
-      bevelThickness: 0.5,
-      bevelSize: 0.1,
-      bevelSegments: 3,
-    }
-  }
-
-  // Create a standard material with red color and 50% gloss
-  const textMaterial = new THREE.MeshStandardMaterial({
-    color: 'black',
-    roughness: 0.1,
-    wireframe: true,
-  })
-
-  const myText = `Meek Mill and Drake and Neo`
-  const texts = [
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Meek Mill and Drake and Neo`,
-    `Create an album together`,
-    `and then what?`,
-    `who knows then what`,
-  ]
-
-  fontLoader.load(
-    'https://unpkg.com/three@0.77.0/examples/fonts/helvetiker_regular.typeface.json',
-    font => {
-      for (let i = 0; i < texts.length; i++) {
-        const textGeometry = new TextGeometry(
-          texts[i],
-          textGeometryParams(font),
-        )
-
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial)
-
-        textMesh.position.set(-myText.length, -1 - i * 4, 0)
-        group.position.y += i / 3.3
-        group.add(textMesh)
-      }
-    },
-  )
+  const texts = selectedObj.body
 
   scene.add(group)
 
@@ -298,10 +288,26 @@ export function initSubThree(p5: p5) {
   const startTime = window.performance.now() // Record start time for animation
   const animationDuration = 4000
 
+  const myText = new Text()
+  scene.add(myText)
+
+  // Set properties to configure:
+  myText.text = selectedObj.body
+  myText.fontSize = 4
+  myText.color = 0x000000
+  // myText.gpuAccelerateSDF = true
+  myText.anchorX = 'center'
+  myText.maxWidth = 60
+
+  // Update the rendering:
+  myText.sync()
+
   renderer.setAnimationLoop(
     animate(stats, () => {
+      renderer.clear()
       frame++
 
+      myText.text = selectedObj.body
       // update the transforms
       // const t = window.performance.now() + 9000
 

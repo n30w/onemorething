@@ -8,13 +8,13 @@ const MainCanvas: React.FC = () => {
       <div className='flex flex-wrap space-x-2 space-y-2'>
         <div
           id='container-three'
-          className='outline-1 outline-dotted  h-fit'
+          className='border-2  h-fit'
           style={{ borderRadius: '4px', overflow: 'hidden' }}
         ></div>
         <div
           id='container-sub-three'
           style={{ borderRadius: '4px', overflow: 'hidden' }}
-          className='outline-1 outline-dotted  h-fit'
+          className='border-2 h-fit'
         ></div>
         {/* <SayBox /> */}
       </div>
