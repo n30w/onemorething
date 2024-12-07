@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { EffectComposer } from 'three/examples/jsm/Addons.js'
 
 /**
  * Returns a function that will be passed to the renderer's setAnimationLoop method.
@@ -15,12 +16,27 @@ export const animationBuilder = (
   camera: THREE.PerspectiveCamera,
 ) => {
   const animation = (stats: Stats, update: any): XRFrameRequestCallback => {
+    // const render = composer ? composer.render() : renderer.render(scene, camera)
     return () => {
       stats.update()
 
       update()
 
       renderer.render(scene, camera)
+    }
+  }
+
+  return animation
+}
+
+export const animationBuilderPixelation = (composer: EffectComposer) => {
+  const animation = (stats: Stats, update: any): XRFrameRequestCallback => {
+    return () => {
+      stats.update()
+
+      update()
+
+      composer.render()
     }
   }
 

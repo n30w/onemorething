@@ -1,5 +1,13 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/Addons.js'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import {
+  EffectComposer,
+  OutputPass,
+  RenderPass,
+  UnrealBloomPass,
+} from 'three/examples/jsm/Addons.js'
+import { FlyControls } from 'three/examples/jsm/controls/FlyControls.js'
+import { RenderPixelatedPass } from 'three/addons/postprocessing/RenderPixelatedPass.js'
 
 /**
  * Sets up a basic THREE.js scene with a perspective camera and a WebGL renderer.
@@ -23,21 +31,50 @@ export function setupScene2() {
     near,
     far,
   )
-
   camera.position.z = 60
+  camera.lookAt(scene.position)
 
   const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
     antialias: true,
   })
-
   renderer.autoClear = false
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(...dim)
+  renderer.toneMapping = THREE.ReinhardToneMapping
+  renderer.shadowMap.enabled = true
+
+  const renderScene = new RenderPass(scene, camera)
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(dim[0], dim[1]),
+    1.5,
+    0.4,
+    0.85,
+  )
+  bloomPass.threshold = 0
+  bloomPass.strength = 0.4
+  bloomPass.radius = 0.5
+
+  const bloomComposer = new EffectComposer(renderer)
+  bloomComposer.renderToScreen = false
+  bloomComposer.addPass(renderScene)
+  bloomComposer.addPass(bloomPass)
+
+  const outputPass = new OutputPass()
+
+  const composer = new EffectComposer(renderer)
+  const renderPixelatedPass = new RenderPixelatedPass(10, scene, camera)
+
+  composer.addPass(renderScene)
+  composer.addPass(renderPixelatedPass)
+  composer.addPass(bloomPass)
+  composer.addPass(outputPass)
 
   const div = document.getElementById('container-three')!
   div.appendChild(renderer.domElement)
 
   const controls = new OrbitControls(camera, renderer.domElement)
+  controls.listenToKeyEvents(window)
+  // controls.maxPolarAngle = Math.PI * 0.5
   controls.minDistance = 5
   controls.maxDistance = 1000
   controls.enablePan = false
@@ -46,6 +83,8 @@ export function setupScene2() {
     scene,
     camera,
     renderer,
+    controls,
+    composer,
   }
 }
 
@@ -92,13 +131,67 @@ export function setupScene() {
   }
 }
 
+// export function setupSubScene() {
+//   // Dimensions for canvas.
+//   const dim: [number, number] = [720, 720]
+
+//   const scene: THREE.Scene = new THREE.Scene()
+
+//   const fov = 35
+//   const aspectRatio = dim[0] / dim[1]
+//   const near = 0.1
+//   const far = 1000
+
+//   const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
+//     fov,
+//     aspectRatio,
+//     near,
+//     far,
+//   )
+
+//   camera.position.z = 5
+
+//   const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
+//     antialias: true,
+//   })
+
+//   renderer.autoClear = false
+//   renderer.setPixelRatio(window.devicePixelRatio)
+//   renderer.setSize(...dim)
+//   renderer.shadowMap.enabled = true
+//   renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+//   const div = document.getElementById('container-sub-three')!
+//   div.appendChild(renderer.domElement)
+
+//   const controls = new OrbitControls(camera, renderer.domElement)
+//   controls.minDistance = 1
+//   controls.maxDistance = 200
+//   controls.enablePan = false
+
+//   camera.position.set(4.6, 2.2, -2.1)
+
+//   // const controls = new FlyControls(camera, renderer.domElement)
+//   // controls.movementSpeed = 100
+//   // controls.rollSpeed = Math.PI / 24
+//   // controls.autoForward = false
+//   // controls.dragToLook = true
+
+//   return {
+//     scene,
+//     camera,
+//     renderer,
+//     controls,
+//   }
+// }
+
 export function setupSubScene() {
   // Dimensions for canvas.
   const dim: [number, number] = [720, 720]
 
   const scene: THREE.Scene = new THREE.Scene()
 
-  const fov = 30
+  const fov = 35
   const aspectRatio = dim[0] / dim[1]
   const near = 0.1
   const far = 1000
@@ -110,27 +203,65 @@ export function setupSubScene() {
     far,
   )
 
-  camera.position.z = 110
+  camera.position.z = 5
 
   const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
     antialias: true,
   })
-
   renderer.autoClear = false
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(...dim)
+  renderer.toneMapping = THREE.ReinhardToneMapping
+  renderer.shadowMap.enabled = true
+
+  const renderScene = new RenderPass(scene, camera)
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(dim[0], dim[1]),
+    1.5,
+    0.4,
+    0.85,
+  )
+  bloomPass.threshold = 0
+  bloomPass.strength = 0.4
+  bloomPass.radius = 0.5
+
+  const bloomComposer = new EffectComposer(renderer)
+  bloomComposer.renderToScreen = false
+  bloomComposer.addPass(renderScene)
+  bloomComposer.addPass(bloomPass)
+
+  const outputPass = new OutputPass()
+
+  const composer = new EffectComposer(renderer)
+  const renderPixelatedPass = new RenderPixelatedPass(2, scene, camera)
+
+  composer.addPass(renderScene)
+  composer.addPass(renderPixelatedPass)
+  composer.addPass(bloomPass)
+  composer.addPass(outputPass)
 
   const div = document.getElementById('container-sub-three')!
   div.appendChild(renderer.domElement)
 
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.minDistance = 5
-  controls.maxDistance = 110
-  controls.enablePan = true
+  controls.minDistance = 1
+  controls.maxDistance = 12
+  controls.enablePan = false
+  controls.maxPolarAngle = Math.PI * 0.5
+
+  camera.position.set(0, 8, 5)
+
+  // const controls = new FlyControls(camera, renderer.domElement)
+  // controls.movementSpeed = 100
+  // controls.rollSpeed = Math.PI / 24
+  // controls.autoForward = false
+  // controls.dragToLook = true
 
   return {
     scene,
     camera,
     renderer,
+    controls,
+    composer,
   }
 }

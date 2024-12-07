@@ -7,11 +7,9 @@ export class TextualObject {
   public scale: THREE.Vector3
   public rotation: THREE.Vector3
   public geometry: any
-  public mesh: THREE.Mesh<
-    any,
-    THREE.MeshLambertMaterial,
-    THREE.Object3DEventMap
-  >
+  public mesh:
+    | THREE.Mesh<any, THREE.MeshLambertMaterial, THREE.Object3DEventMap>
+    | THREE.Mesh<any, THREE.MeshPhongMaterial, THREE.Object3DEventMap>
 
   constructor({
     position,
@@ -27,11 +25,22 @@ export class TextualObject {
     this.position = position
     this.scale = scale
     this.rotation = rotation
-    this.geometry = new THREE.BoxGeometry()
+    this.geometry = new THREE.IcosahedronGeometry(0.75)
+    // this.mesh = new THREE.Mesh(
+    //   this.geometry,
+    //   new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
+    // )
     this.mesh = new THREE.Mesh(
       this.geometry,
-      new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }),
+      new THREE.MeshPhongMaterial({
+        color: 0x68b7e9,
+        emissive: 0x4f7e8b,
+        shininess: 10,
+        specular: 0xffffff,
+      }),
     )
+
+    this.mesh.receiveShadow = true
 
     this.mesh.position.x = position.x
     this.mesh.position.y = position.y
@@ -47,7 +56,10 @@ export class TextualObject {
 
     this.mesh.userData = {
       sender: '',
+      receiver: '',
+      subject: '',
       body: this.text,
+      clickable: true,
     }
   }
 
@@ -61,11 +73,23 @@ export class TextualObject {
     this.mesh.userData.body = body
     this.text = body
   }
+
+  public setSender(sender: string) {
+    this.mesh.userData.sender = sender
+  }
+
+  public setReceiver(receiver: string) {
+    this.mesh.userData.receiver = receiver
+  }
+
+  public setSubject(subject: string) {
+    this.mesh.userData.subject = subject
+  }
 }
 
 export function generateTextualObjects(scene?: THREE.Scene): TextualObject[] {
   const objects: TextualObject[] = []
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 3; i++) {
     const object = new TextualObject({
       position: new THREE.Vector3(
         Math.random() * 40 - 20,
