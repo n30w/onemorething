@@ -9,7 +9,7 @@ export const sketch = (p5: p5) => {
 
     // initThree(p5)
     initThree2()
-    initSubThree(p5)
+    // initSubThree(p5)
   }
 
   p5.draw = () => {

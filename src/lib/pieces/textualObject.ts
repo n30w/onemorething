@@ -55,11 +55,13 @@ export class TextualObject {
     this.mesh.scale.z = scale.z
 
     this.mesh.userData = {
+      textName: '',
       sender: '',
       receiver: '',
       subject: '',
       body: this.text,
       clickable: true,
+      nextText: '',
     }
   }
 
@@ -87,8 +89,9 @@ export class TextualObject {
   }
 }
 
+// Retrieve objects from the firestore database
 export function generateTextualObjects(scene?: THREE.Scene): TextualObject[] {
-  const objects: TextualObject[] = []
+  const objs: TextualObject[] = []
   for (let i = 0; i < 3; i++) {
     const object = new TextualObject({
       position: new THREE.Vector3(
@@ -108,12 +111,80 @@ export function generateTextualObjects(scene?: THREE.Scene): TextualObject[] {
       ),
     })
 
-    objects.push(object)
+    objs.push(object)
 
     if (scene) {
       scene.add(object.mesh)
     }
   }
 
-  return objects
+  objs[1].mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(5, 5, 5),
+    new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      emissive: 0x4f0e8f,
+      shininess: 10,
+      specular: 0xffffff,
+    }),
+  )
+
+  objs[1].mesh.userData = {
+    textName: '',
+    sender: '',
+    receiver: '',
+    subject: '',
+    clickable: true,
+    nextText: '',
+  }
+
+  // Test Data
+  objs[0].setBody(
+    `Officials in the US State Department were caught totally off guard by President Yoon’s martial law announcement.
+
+It's hard to overstate the strategic importance of the alliance between Washington and Seoul - the US has nearly 30,000 troops in the country which it vows to defend from its nuclear armed neighbour in the north through a wide ranging set of defence agreements.
+
+So for Seoul’s leadership to take such a drastic step without even telling Washington - as the State Department contends - is extraordinary.
+
+The US says it had no advance warning Yoon would declare martial law.
+
+It is not entirely clear whether Secretary of State Antony Blinken - currently in Brussels - was able to speak to his counterpart during the height of this crisis.
+
+Now Yoon has said he will reverse his order I think Washington is wondering what an earth has happened - and will be rapidly reassessing how reliable the leadership of an ally it considers a bedrock of democratic stability in the region actually is.`,
+  )
+  objs[0].setSender('kai')
+  objs[0].setReceiver('neo')
+
+  objs[1].setSubject('Concerns regarding your future')
+  objs[1].setBody(
+    `Dear Neo,
+
+  What are you even thinking of doing with that degree. Like seriously?
+
+  Yours truly,
+  Yourself`,
+  )
+  objs[1].setSender('neo')
+  objs[1].setReceiver('kai')
+
+  objs[2].setSubject('New Job Opportunity')
+  objs[2].setBody(
+    `I hope this email finds you well! My name is Alex, and I work with a team that’s tackling some exciting challenges in the world of creative technologies. We’ve been following your work closely and are incredibly impressed with your projects, especially your unique approach to blending computational creativity with cutting-edge design.
+
+We’re currently working on a new initiative that aligns perfectly with your expertise. It’s a collaborative effort focused on redefining how people interact with immersive digital environments. Given your background, we believe you’d be a perfect fit to bring fresh perspectives and innovative ideas to the table.
+
+If you’re interested, I’d love to schedule a call to discuss this further. We’re flexible and can work around your availability. This could be a great opportunity for you to expand your creative horizons while contributing to a meaningful project.
+
+Looking forward to your response!
+
+Warm regards,
+Alex Green
+Creative Director
+FutureSpace Studios
+alex.green@futurespacestudios.com
+(555) 123-4567f`,
+  )
+  objs[2].setSender('kai')
+  objs[0].setReceiver('neo')
+
+  return objs
 }

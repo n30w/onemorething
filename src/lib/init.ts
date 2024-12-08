@@ -1,13 +1,7 @@
 import { setupScene, setupScene2, setupSubScene } from './render/scene'
 import dat from 'dat.gui'
 import * as THREE from 'three'
-import {
-  BasicPlane,
-  makeCSG,
-  makeLights,
-  makeSubLights,
-  Satellite,
-} from './elements'
+import { makeCSG, makeLights, Satellite } from './elements'
 import Stats from 'stats.js'
 import {
   animationBuilder,
@@ -45,59 +39,21 @@ const textMaterial = new THREE.MeshStandardMaterial({
 })
 
 const objs = generateTextualObjects()
-objs[0].setBody(
-  `Officials in the US State Department were caught totally off guard by President Yoon’s martial law announcement.
 
-It's hard to overstate the strategic importance of the alliance between Washington and Seoul - the US has nearly 30,000 troops in the country which it vows to defend from its nuclear armed neighbour in the north through a wide ranging set of defence agreements.
+export let selectedObj = objs[0].mesh.userData
 
-So for Seoul’s leadership to take such a drastic step without even telling Washington - as the State Department contends - is extraordinary.
-
-The US says it had no advance warning Yoon would declare martial law.
-
-It is not entirely clear whether Secretary of State Antony Blinken - currently in Brussels - was able to speak to his counterpart during the height of this crisis.
-
-Now Yoon has said he will reverse his order I think Washington is wondering what an earth has happened - and will be rapidly reassessing how reliable the leadership of an ally it considers a bedrock of democratic stability in the region actually is.`,
-)
-
-objs[1].setBody(
-  `Dear Neo,
-
-  What are you even thinking of doing with that degree. Like seriously?
-
-  Yours truly,
-  Yourself`,
-)
-
-objs[1].setSubject('Concerns regarding your future')
-
-objs[2].setBody(
-  `I hope this email finds you well! My name is Alex, and I work with a team that’s tackling some exciting challenges in the world of creative technologies. We’ve been following your work closely and are incredibly impressed with your projects, especially your unique approach to blending computational creativity with cutting-edge design.
-
-We’re currently working on a new initiative that aligns perfectly with your expertise. It’s a collaborative effort focused on redefining how people interact with immersive digital environments. Given your background, we believe you’d be a perfect fit to bring fresh perspectives and innovative ideas to the table.
-
-If you’re interested, I’d love to schedule a call to discuss this further. We’re flexible and can work around your availability. This could be a great opportunity for you to expand your creative horizons while contributing to a meaningful project.
-
-Looking forward to your response!
-
-Warm regards,
-Alex Green
-Creative Director
-FutureSpace Studios
-alex.green@futurespacestudios.com
-(555) 123-4567f`,
-)
-
-objs[2].setSubject('New Job Opportunity')
-
-let selectedObj = objs[0].mesh.userData
+export const { scene, camera, renderer, composer } = setupScene2()
 
 export function initThree2() {
+  const div = document.getElementById('container-three')!
+
+  div.appendChild(renderer.domElement)
+
   let INTERSECTED: any
+
   INTERSECTED = objs[0].mesh
 
   const clock = new THREE.Clock()
-
-  const { scene, camera, renderer, composer } = setupScene2()
 
   const animate = animationBuilderPixelation(composer)
 
@@ -167,7 +123,6 @@ export function initThree2() {
       camera.updateMatrixWorld()
 
       // find intersections
-
       raycaster.setFromCamera(pointer, camera)
 
       camera.updateProjectionMatrix()
@@ -230,24 +185,6 @@ export function initThree2() {
 
       INTERSECTED = null
     }
-  }
-
-  canvas.addEventListener('keydown', onKeyPress)
-
-  function onKeyPress(event: KeyboardEvent) {
-    const moveAmount = 10 // Adjust the value to control the movement speed
-
-    switch (event.key) {
-      case 'ArrowUp': // Move the camera up
-        camera.position.y += moveAmount
-        break
-      case 'ArrowDown': // Move the camera down
-        camera.position.y -= moveAmount
-        break
-      default:
-        break
-    }
-    camera.updateProjectionMatrix() // Ensure the camera's projection matrix is updated
   }
 }
 
@@ -393,7 +330,6 @@ export function initSubThree(p5: p5) {
 
   // scene.background = new THREE.Color(0xfce4e0)
   scene.background = new THREE.Color(0x000000)
-  // scene.background = new THREE.Color(0xffffff)
 
   // lights
   // const { ambiLight, dirLight } = makeSubLights()
@@ -441,7 +377,8 @@ export function initSubThree(p5: p5) {
   receiverText.anchorX = 'center'
   receiverText.maxWidth = 80
 
-  mailGroup.add(subjectText, bodyText, receiverText, senderText)
+  // mailGroup.add(subjectText, bodyText, receiverText, senderText)
+  mailGroup.add(subjectText, bodyText)
 
   mailGroup.position.y = 0
   mailGroup.position.x = 0

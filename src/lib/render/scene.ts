@@ -16,7 +16,7 @@ import { RenderPixelatedPass } from 'three/addons/postprocessing/RenderPixelated
  */
 export function setupScene2() {
   // Dimensions for canvas.
-  const dim: [number, number] = [720, 720]
+  const dim: [number, number] = [480, 480]
 
   const scene: THREE.Scene = new THREE.Scene()
 
@@ -62,15 +62,12 @@ export function setupScene2() {
   const outputPass = new OutputPass()
 
   const composer = new EffectComposer(renderer)
-  const renderPixelatedPass = new RenderPixelatedPass(10, scene, camera)
+  const renderPixelatedPass = new RenderPixelatedPass(5, scene, camera)
 
   composer.addPass(renderScene)
   composer.addPass(renderPixelatedPass)
   composer.addPass(bloomPass)
   composer.addPass(outputPass)
-
-  const div = document.getElementById('container-three')!
-  div.appendChild(renderer.domElement)
 
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.listenToKeyEvents(window)
@@ -131,60 +128,6 @@ export function setupScene() {
   }
 }
 
-// export function setupSubScene() {
-//   // Dimensions for canvas.
-//   const dim: [number, number] = [720, 720]
-
-//   const scene: THREE.Scene = new THREE.Scene()
-
-//   const fov = 35
-//   const aspectRatio = dim[0] / dim[1]
-//   const near = 0.1
-//   const far = 1000
-
-//   const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
-//     fov,
-//     aspectRatio,
-//     near,
-//     far,
-//   )
-
-//   camera.position.z = 5
-
-//   const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
-//     antialias: true,
-//   })
-
-//   renderer.autoClear = false
-//   renderer.setPixelRatio(window.devicePixelRatio)
-//   renderer.setSize(...dim)
-//   renderer.shadowMap.enabled = true
-//   renderer.shadowMap.type = THREE.PCFSoftShadowMap
-
-//   const div = document.getElementById('container-sub-three')!
-//   div.appendChild(renderer.domElement)
-
-//   const controls = new OrbitControls(camera, renderer.domElement)
-//   controls.minDistance = 1
-//   controls.maxDistance = 200
-//   controls.enablePan = false
-
-//   camera.position.set(4.6, 2.2, -2.1)
-
-//   // const controls = new FlyControls(camera, renderer.domElement)
-//   // controls.movementSpeed = 100
-//   // controls.rollSpeed = Math.PI / 24
-//   // controls.autoForward = false
-//   // controls.dragToLook = true
-
-//   return {
-//     scene,
-//     camera,
-//     renderer,
-//     controls,
-//   }
-// }
-
 export function setupSubScene() {
   // Dimensions for canvas.
   const dim: [number, number] = [720, 720]
@@ -233,7 +176,7 @@ export function setupSubScene() {
   const outputPass = new OutputPass()
 
   const composer = new EffectComposer(renderer)
-  const renderPixelatedPass = new RenderPixelatedPass(2, scene, camera)
+  const renderPixelatedPass = new RenderPixelatedPass(1, scene, camera)
 
   composer.addPass(renderScene)
   composer.addPass(renderPixelatedPass)
