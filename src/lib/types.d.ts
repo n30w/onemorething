@@ -15,8 +15,8 @@ interface ProfileObject {
 }
 
 enum ProfileObjectType {
-  Icosahedron = 1,
-  Cube,
+  Cube = 1,
+  Icosahedron,
   Rectangle,
 }
 

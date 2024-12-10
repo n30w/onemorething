@@ -26,3 +26,19 @@ export interface InboxSceneContextValue {
   inboxScene: any
   setInboxScene: React.Dispatch<React.SetStateAction<any>>
 }
+
+export const UsernameContext = createContext<
+  UsernameContextValue | null | string
+>(null)
+
+export interface UsernameContextValue {
+  username: any
+  setUsername: React.Dispatch<React.SetStateAction<any>>
+}
+
+export const ProfileContext = createContext<ProfileContextValue | null>(null)
+
+export interface ProfileContextValue {
+  profile: any
+  setProfile: React.Dispatch<React.SetStateAction<any>>
+}

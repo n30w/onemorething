@@ -1,10 +1,23 @@
 import React, { useContext } from 'react'
 import * as THREE from 'three'
 import { TextualObject } from '../lib/pieces/textualObject'
-import { InboxSceneContext, InboxSceneContextValue } from '../lib/Contexts'
+import {
+  InboxSceneContext,
+  InboxSceneContextValue,
+  SelectedObjContext,
+  SelectedObjContextValue,
+  UsernameContext,
+  UsernameContextValue,
+} from '../lib/contexts'
+import { ref, set, push } from 'firebase/database'
+import { database } from '../data/firebase'
 
 const SayBox: React.FC = () => {
   const { inboxScene } = useContext(InboxSceneContext) as InboxSceneContextValue
+  const { username } = useContext(UsernameContext) as UsernameContextValue
+  const { selectedObj } = useContext(
+    SelectedObjContext,
+  ) as SelectedObjContextValue
 
   function publish(formData: { get: (arg0: string) => any }) {
     // Get the current user's profile object type and
@@ -38,18 +51,95 @@ const SayBox: React.FC = () => {
     obj.mesh.userData.subject = subject
 
     // stateful username
-    obj.mesh.userData.sender = 'get Username'
+    obj.mesh.userData.sender = username
 
     // Depends on state of selected msg, if there is one.
-    obj.mesh.userData.isHead = false
+    obj.mesh.userData.isHead = selectedObj ? false : true
 
-    // Depends on state
-    obj.mesh.userData.next = 'get id of currently selected msg'
+    obj.mesh.userData.next = ''
+    obj.mesh.userData.prev = selectedObj ? selectedObj.id : ''
+
+    obj.mesh.userData.posX = obj.position.x
+    obj.mesh.userData.posY = obj.position.y
+    obj.mesh.userData.posZ = obj.position.z
+    obj.mesh.userData.type = 1
 
     inboxScene.add(obj.mesh)
 
     // Then upload the object's data to the firestore
     // database.
+
+    // Prepare data for Firebase upload
+    const messageData = {
+      sender: obj.mesh.userData.sender,
+      receiver: obj.mesh.userData.receiver,
+      subject: obj.mesh.userData.subject,
+      body: obj.mesh.userData.body,
+      isHead: obj.mesh.userData.isHead,
+      next: obj.mesh.userData.next,
+      prev: obj.mesh.userData.prev,
+      clickable: obj.mesh.userData.clickable,
+      posX: obj.mesh.userData.posX,
+      posY: obj.mesh.userData.posY,
+      posZ: obj.mesh.userData.posZ,
+      objType: obj.mesh.userData.type,
+      timestamp: new Date().toISOString(),
+    }
+
+    // Upload to "messages" collection
+    const messagesRef = ref(database, 'messages')
+    const newMessageRef = push(messagesRef)
+    set(newMessageRef, messageData)
+      .then(() => {
+        console.log('Message added to "messages" collection')
+      })
+      .catch(error => {
+        console.error('Error adding message to "messages":', error)
+      })
+
+    if (selectedObj) {
+      // Get the reference to the `selectedObj` in the database
+      const selectedObjRef = ref(
+        database,
+        `users/${username}/messages/${selectedObj.id}`,
+      )
+
+      // Update the 'next' field with the current message ID
+      set(selectedObjRef, {
+        ...selectedObj, // Keep existing fields
+        next: newMessageRef.key, // Use the current message ID
+      })
+        .then(() => {
+          console.log(
+            `Updated selectedObj's 'next' with ID: ${newMessageRef.key}`,
+          )
+        })
+        .catch(error => {
+          console.error(`Error updating selectedObj's 'next':`, error)
+        })
+    }
+
+    // Upload to the user's specific location
+    const userMessagesRef = ref(database, `users/${username}/messages`)
+    const newUserMessageRef = push(userMessagesRef)
+    set(newUserMessageRef, messageData)
+      .then(() => {
+        console.log(`Message added under user "${username}"`)
+      })
+      .catch(error => {
+        console.error(`Error adding message under user "${username}":`, error)
+      })
+
+    // Upload to the user's specific location
+    const user2MessagesRef = ref(database, `users/${to}/messages`)
+    const newUser2MessageRef = push(user2MessagesRef)
+    set(newUser2MessageRef, messageData)
+      .then(() => {
+        console.log(`Message added under user "${to}"`)
+      })
+      .catch(error => {
+        console.error(`Error adding message under user "${to}":`, error)
+      })
   }
 
   return (

@@ -73,7 +73,7 @@ export function setupScene2() {
   controls.listenToKeyEvents(window)
   // controls.maxPolarAngle = Math.PI * 0.5
   controls.minDistance = 5
-  controls.maxDistance = 1000
+  controls.maxDistance = 100
   controls.enablePan = false
 
   return {

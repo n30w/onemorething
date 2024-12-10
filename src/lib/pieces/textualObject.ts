@@ -10,16 +10,21 @@ export class TextualObject {
   public mesh:
     | THREE.Mesh<any, THREE.MeshLambertMaterial, THREE.Object3DEventMap>
     | THREE.Mesh<any, THREE.MeshPhongMaterial, THREE.Object3DEventMap>
+  public type: ProfileObjectType
 
-  constructor({
-    position,
-    rotation,
-    scale,
-  }: {
-    position: THREE.Vector3
-    rotation: THREE.Vector3
-    scale: THREE.Vector3
-  }) {
+  constructor(
+    {
+      position,
+      rotation,
+      scale,
+    }: {
+      position: THREE.Vector3
+      rotation: THREE.Vector3
+      scale: THREE.Vector3
+    },
+    type?: number,
+  ) {
+    this.type = type ? type : 1
     this.text = ''
     this.isSelected = false
     this.position = position
@@ -61,11 +66,14 @@ export class TextualObject {
       subject: '',
       body: this.text,
       clickable: true,
-      nextText: '',
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      next: '',
+      prev: '',
+      objType: this.type,
     }
   }
-
-  render() {}
 
   public getBody() {
     return this.mesh.userData.body
@@ -87,6 +95,67 @@ export class TextualObject {
   public setSubject(subject: string) {
     this.mesh.userData.subject = subject
   }
+}
+
+// Generates objects in the scene.
+export function generateObjects(loaded: any[]): TextualObject[] {
+  const objs: TextualObject[] = []
+  for (let i = 0; i < loaded.length; i++) {
+    const attr = loaded[i]
+    const object = new TextualObject(
+      {
+        position: new THREE.Vector3(attr.posX, attr.posY, attr.posZ),
+        rotation: new THREE.Vector3(
+          Math.random() * 2 * Math.PI,
+          Math.random() * 2 * Math.PI,
+          Math.random() * 2 * Math.PI,
+        ),
+        scale: new THREE.Vector3(5, 5, 5),
+      },
+      attr.objType,
+    )
+
+    switch (attr.objType) {
+      case 1:
+        object.mesh = new THREE.Mesh(
+          new THREE.BoxGeometry(5, 5, 5),
+          new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            emissive: 0x4f0e8f,
+            shininess: 10,
+            specular: 0xffffff,
+          }),
+        )
+        break
+      case 3:
+        const sphereGeometry = new THREE.SphereGeometry(1, 32, 32)
+        const reflectiveMaterial = new THREE.MeshPhongMaterial({
+          color: 0x2266ff,
+        })
+        object.mesh = new THREE.Mesh(sphereGeometry, reflectiveMaterial)
+        break
+      default:
+        break
+    }
+
+    object.mesh.position.x = attr.posX
+    object.mesh.position.y = attr.posY
+    object.mesh.position.z = attr.posZ
+
+    object.mesh.userData.clickable = attr.clickable
+
+    object.mesh.userData.id = attr.id
+    object.mesh.userData.prev = attr.prev
+    object.mesh.userData.next = attr.next
+    object.setBody(attr.body)
+    object.setReceiver(attr.receiver)
+    object.setSender(attr.sender)
+    object.setSubject(attr.subject)
+
+    objs.push(object)
+    console.log(object)
+  }
+  return objs
 }
 
 // Retrieve objects from the firestore database
@@ -134,7 +203,7 @@ export function generateTextualObjects(scene?: THREE.Scene): TextualObject[] {
     receiver: '',
     subject: '',
     clickable: true,
-    nextText: '',
+    next: '',
   }
 
   // Test Data
