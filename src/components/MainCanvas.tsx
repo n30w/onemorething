@@ -288,6 +288,7 @@ const MainCanvas: React.FC = () => {
 
       const intersects = raycaster.intersectObjects(scene.children, false)
 
+      // I found the intersection code from here: https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes.html
       if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
           if (INTERSECTED) {

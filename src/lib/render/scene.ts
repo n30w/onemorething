@@ -43,6 +43,11 @@ export function setupScene2() {
   renderer.toneMapping = THREE.ReinhardToneMapping
   renderer.shadowMap.enabled = true
 
+  // Pixel painting code from here:
+  // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_pixel.html
+  // Bloom code from here:
+  // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_unreal_bloom.html
+
   const renderScene = new RenderPass(scene, camera)
   const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(dim[0], dim[1]),
